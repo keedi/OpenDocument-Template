@@ -1,5 +1,7 @@
 Release history for OpenDocument-Template
 
 {{ $NEXT }}
-    First version, released on unsuspecting world.
 
+0.001     2011-07-21 20:07:45 Asia/Seoul
+    - First version, released on unsuspecting world.
+    - port from DCF::ODT in scro-mc.git

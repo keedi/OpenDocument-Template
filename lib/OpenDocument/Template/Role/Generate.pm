@@ -50,3 +50,8 @@ sub generate {
 1;
 __END__
 
+=for Pod::Coverage AZ_OK
+
+=method generate
+
+generate role method
