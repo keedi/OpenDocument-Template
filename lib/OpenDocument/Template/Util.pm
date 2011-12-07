@@ -21,7 +21,8 @@ sub update_template {
 
     my %params = (
         output_dir => $ot->template_dir,
-        prefix     => qr/(xxx|yyy|zzz)\./,
+        prefix     => q{},
+        force      => 0,
         @_,
     );
 
@@ -50,11 +51,27 @@ sub update_template {
             $tidy->write;
 
             my $text = read_file($file);
-            my $regexp = $params{prefix};
-            $text =~ s/${regexp}\w+/[% $& | xml %]/g;
-            write_file( catfile($output_dir, $file), $text );
+            if ( $params{prefix} ) {
+                my $regexp = qr/$params{prefix}/;
+                $text =~ s/${regexp}\w+/[% $& | xml %]/g;
+            }
+
+            my $dest = catfile($output_dir, $file);
+            if ( -f $dest ) {
+                if ($params{force}) {
+                    write_file( $dest, $text ) if $params{force};
+                }
+                else {
+                    warn "file is already exists. use --force option: $dest\n";
+                }
+            }
+            else {
+                write_file( $dest, $text );
+            }
         }
     }
+
+    return 1;
 }
 
 1;
@@ -62,20 +79,41 @@ __END__
 
 =pod
 
-=method update_template
+=method update_template( $ot, %params )
 
 update template.
 
+=over
+
+=item $ot
+
+OpenDocument::Template object
+
+=item prefix
+
+match rule to convert for Template Toolkit variable
+
+=item output_dir
+
+directory for generated(updated) file
+
+=item force
+
+force overwrite if file is already existed
+
+=back
+
+Example:
+
     my $ot = OpenDocument::Template->new(
-        config       => 'dcf.yml',
-        template_dir => 'templates',
-        src          => 'dcf-template.odt',
-        dest         => 'dcf.odt',
+        config       => 'addressbook.yml',
+        template_dir => 'template',
+        src          => 'addressbook.odt',
+        dest         => 'addressbook-template.odt',
     );
     OpenDocument::Template::Util->update_template(
         $ot,
-        prefix     => qr/(xxx|yyy)\./,
-        output_dir => 'result',
-    );
+        prefix     => qr/(meta|person)\./,
+    ) or "failed to update template\n";
 
 =cut
