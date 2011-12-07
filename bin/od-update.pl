@@ -15,27 +15,22 @@ binmode STDIN,  ':utf8';
 binmode STDOUT, ':utf8';
 
 my ( $opt, $usage ) = describe_options(
-    "%c %o ...",
-    [ 'config|c=s',       'config file'          ],
+    "%c %o",
+    [ 'config|c=s', 'config file'     ],
+    [ 'src|s=s',    'source ODT file' ],
     [
         'template-dir|t=s',
         'template directory (default: .)',
         { default => q{.} },
     ],
     [
-        'output-dir|o=s',
-        'output directory (default: .)',
-        { default => q{.} },
-    ],
-    [
         'prefix|p=s',
-        'prefix (default: (xxx|yyy)\.)',
-        { default => q{(xxx|yyy)\.} },
+        'prefix to convert in to template ex. "(meta|person)\."',
     ],
-    [ 'src|s=s',          'source ODT file'      ],
+    [ 'force|f',    'force rewrite',  ],
     [],
-    [ 'verbose|v', 'print extra stuff', { default => 0 } ],
-    [ 'help|h',    'print usage message and exit'        ],
+    [ 'verbose|v',  'print extra stuff', { default => 0 } ],
+    [ 'help|h',     'print usage message and exit'        ],
 );
 
 print($usage->text), exit if $opt->help;
@@ -47,9 +42,9 @@ my $ot = OpenDocument::Template->new(
     template_dir => $opt->template_dir,
     src          => $opt->src,
 );
-my $prefix = $opt->prefix;
+
 OpenDocument::Template::Util->update_template(
     $ot,
-    prefix     => qr/$prefix/,
-    output_dir => $opt->output_dir,
-);
+    prefix => $opt->prefix,
+    force  => $opt->force,
+) or die "failed to update template\n";
