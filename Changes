@@ -1,6 +1,10 @@
 Release history for OpenDocument-Template
 
 {{ $NEXT }}
+    - update manual
+    - od-update.pl update options
+      - add `force` to overwrite if already file is existed
+      - remove `output-dir` and use `template-dir`
 
 0.001     2011-07-21 20:07:45 Asia/Seoul
     - First version, released on unsuspecting world.
