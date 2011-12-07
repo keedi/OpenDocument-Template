@@ -65,27 +65,94 @@ Following YAML file is a sample configuration.
     ---
     templates:
       styles.xml:
-        title: DATA CLARIFICATION FORM
-        header:
-        no: BA07-CP01
-        site_no: 11
-        subjno: SN01-01
-        issue_date: 2011-03-17
+        meta:
+          title: SILEX Contacts
       content.xml:
-        rows:
-          - query_no: 1
-            crf_page: 01/16
-          - query_no: 2
-            crf_page: 01/17
-          - query_no: 3
-            crf_page: 01/17
-          - query_no: 4
-            crf_page: 01/18
+        people:
+          - nick:  yongbin
+            name:  Yongbin Yu
+            tel:   010-W2W1-0256
+            email: yongbinxxx@gmail.com
+            memo:  SILEX CEO.
+          - nick:  keedi
+            name:  Keedi Kim
+            tel:   010-2511-6XY3
+            email: keedyyy@gmail.com
+            memo:  Perl Manua
+          - nick:  mintegrals
+            name:  Minsun Lee
+            tel:   010-YZZ3-5XY6
+            email: mintegrzzz@gmail.com
+            memo:  MC.Miniper
+          - nick:  aanoaa
+            name:  홍형석
+            tel:   010-31X2-0X00
+            email: aanoxxx@gmail.com
+            memo:  Mustache Mania
+          - nick:  JEEN
+            name:  이종진
+            tel:   010-6W3Z-WX1Y
+            email: aiateyyy@gmail.com
+            memo:  Keyboard Warrior
+          - nick:  rumidier
+            name:  조한영
+            tel:   010-6X66-2Y0X
+            email: rumidzzz@gmail.com
+            memo:  Wild Horse
 
 With above configuration, you must have two template files,
 C<styles.xml> and C<content.xml>.
 And each additional data will be used when template
 files is processed.
+
+You can extract C<styles.xml> and C<content.xml>
+from your OpenDocument file by hand.
+Or use C<od-update.pl> tools which is a part of OpenDocument::Template.
+First make your own ODT file, then make table for address book.
+Then fill contents with C<meta.> or C<person.> prefix like
+C<meta.title>, C<person.nick>, C<person.email>, ... etc.
+
+Then run following command.
+
+    od-update.pl -c addressbook.yml -s addressbook-template.odt  -t template/ -p '(meta|person)\.'
+
+After that, you got two xml files which are formatted
+using L<XML::Tidy> under C<template> directory.
+And C<meta.title> will be turned into C<[% meta.title | xml %]> and
+C<person.email> will be turned into C<[% person.email | xml %]>.
+It uses L<Template> module so, check it to see specific syntax.
+Maybe you need to edit and add more Template Toolkit syntax,
+like loop or control statements.
+In this case, you need loop statement in C<content.xml>
+to display each person's information.
+
+        ...
+        [% FOR person IN people %]
+        <table:table-row>
+          <table:table-cell table:style-name="표1.A2" office:value-type="string">
+            <text:p text:style-name="P4">[% person.nick | xml %]</text:p>
+          </table:table-cell>
+          <table:table-cell table:style-name="표1.A2" office:value-type="string">
+            <text:p text:style-name="P4">[% person.name | xml %]</text:p>
+          </table:table-cell>
+          <table:table-cell table:style-name="표1.A2" office:value-type="string">
+            <text:p text:style-name="P4">[% person.tel | xml %]</text:p>
+          </table:table-cell>
+          <table:table-cell table:style-name="표1.A2" office:value-type="string">
+            <text:p text:style-name="P4">[% person.email | xml %]</text:p>
+          </table:table-cell>
+          <table:table-cell table:style-name="표1.E2" office:value-type="string">
+            <text:p text:style-name="P4">[% person.memo | xml %]</text:p>
+          </table:table-cell>
+        </table:table-row>
+        [% END %]
+        ...
+
+After editing template xml file then run following command,
+then you can get result ODT file.
+
+    od-gen.pl -c addressbook.yml -t template/ -s addressbook-template.odt -d addressbook-result.odt
+
 
 =attr config
 
