@@ -1,6 +1,8 @@
 Release history for OpenDocument-Template
 
 {{ $NEXT }}
+
+0.002     2011-12-08 05:04:38 Asia/Seoul
     - update manual
     - od-update.pl update options
       - add `force` to overwrite if already file is existed
